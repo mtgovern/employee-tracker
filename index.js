@@ -39,7 +39,7 @@ function getJob() {
                 break;
                 case 'view': view();
                 break;
-                case 'update': update();
+                case 'update': update_role();
                 break;
                 case 'exit': connection.end()
                 return;
@@ -75,6 +75,10 @@ function add_department() {
                 name: "db",
                 message: "What is the department's name?",
                 type: 'input',
+                validate: (input) => {
+                    if (input) return true
+                    else return false
+                }
             }
         ).then(function ( { name }) {
             connection.query(`INSERT INTO department (name) VALUES ('${name}')`, function (err, data) {
@@ -129,18 +133,18 @@ function add_employee() {
     let employees = [];
     let roles = [];
 
-    connection.query(`SELECT * FROM role`, function (err, data) {
+    connection.query(`SELECT * FROM role`, function (err, roledata) {
         if (err) throw err;
 
-        for (let i=0; i < data.length; i++) {
-            roles.push(data[i].title)
+        for (let i=0; i < roledata.length; i++) {
+            roles.push(roledata[i].title)
         }
 
-        connection.query(`SELECT * FROM employee`, function (err, data) {
+        connection.query(`SELECT * FROM employee`, function (err, empldata) {
             if (err) throw err;
     
-            for (let i=0; i < data.length; i++) {
-                roles.push(data[i].first_name)
+            for (let i=0; i < empldata.length; i++) {
+                employees.push(empldata[i].first_name)
             }
 
         inquirer
@@ -196,13 +200,40 @@ function view() {
             }
         ).then(function ( { db }) {
             switch (db) {
-                case "role": update_role()
+                case "role": view_role()
                 break;
-                case "manager": update_manager()
+                case "employee": view_employee()
+                break;
+                case "department": view_department()
                 break;
             }
         });
 }
+
+function view_role() {
+    connection.query(`SELECT * FROM role`, function (err, data) {
+        if (err) throw err;
+        console.table(data);
+        getJob();
+    });
+};
+
+function view_employee() {
+    connection.query(`SELECT * FROM employee`, function (err, data) {
+        if (err) throw err;
+        console.table(data);
+        getJob();
+    });
+};
+
+function view_department() {
+    connection.query(`SELECT * FROM department`, function (err, data) {
+         if (err) throw err;
+         console.table(data);
+         getJob();
+    });
+};
+
 
 function update_role() {
     connection.query(`SELECT * FROM employee`, function (err, data) {
