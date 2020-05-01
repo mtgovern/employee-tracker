@@ -10,6 +10,7 @@ A command-line application allows the user to:
   ![](Add.gif)
 
   * View departments, roles, employees
+![](view.gif)
 
   * Update employee roles
 
